@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BODYCAM BREACH</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+
+  <!-- タイトル(HUD風メニュー) -->
+  <div id="menu" class="hud hidden">
+    <div class="frame"><i></i><i></i><i></i><i></i></div>
+    <header class="brand">
+      <div class="logo">BODYCAM<b>BREACH</b></div>
+      <div class="sub">TACTICAL STEALTH FPS // CO-OP · TEAM DEATHMATCH · FREE FOR ALL</div>
+      <label class="callsign"><span>CALLSIGN</span><input id="name" maxlength="12" autocomplete="off"></label>
+    </header>
+    <nav id="nav"></nav>
+    <section id="tab"></section>
+    <p id="menuStat" class="stat"></p>
+    <footer class="keys">WASD 移動 · Shift ダッシュ · C しゃがみ · 右クリック 構え · R リロード · N ナイトビジョン · G 扉/爆弾/ラペリング · H 起爆 · Tab スコア · F1 ボディカム切替</footer>
+  </div>
+
+  <!-- ロビー(HUD風。右側の3Dに全員が武器を持って並ぶ) -->
+  <div id="lobby" class="hud hidden">
+    <div class="frame"><i></i><i></i><i></i><i></i></div>
+    <header class="brand">
+      <div class="logo">ROOM <b id="lcode"></b></div>
+      <div class="sub">SQUAD LOBBY // 全員の装備が右に並びます</div>
+    </header>
+    <nav id="lnav"></nav>
+    <section id="ltab" class="hidden"></section>
+    <div id="roomBody">
+      <div class="sec">INVITE</div>
+      <div class="row">
+        <input id="invite" readonly>
+        <button id="copy" class="btn small">URLコピー</button>
+      </div>
+      <div class="sec">SQUAD</div>
+      <div id="players"></div>
+      <div class="sec">MODE</div>
+      <div id="modes" class="row"></div>
+      <p id="modeDesc" class="desc"></p>
+      <div id="ffRow" class="row"></div>
+      <div class="sec">MISSION</div>
+      <div id="missions" class="row"></div>
+      <button id="start" class="btn primary" style="margin-top:14px;width:100%;padding:14px;font-size:18px;letter-spacing:.2em">START</button>
+      <p id="lobbyStat" class="stat"></p>
+      <button id="leave" class="btn small">部屋を出る</button>
+    </div>
+  </div>
+
+  <div id="loading"><div class="bar"><div id="fill"></div></div><div id="ltext">読み込み中…</div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+  <script src="bodycam.js"></script>
+  <script>
+    var buildUrl = "Build";
+    var config = {
+      arguments: [],
+      devicePixelRatio: 1,   // 高解像度ディスプレイでも画面ピクセル数を増やさない(重さ対策)
+      dataUrl: buildUrl + "/web.data",
+      frameworkUrl: buildUrl + "/web.framework.js",
+      codeUrl: buildUrl + "/web.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "BODYCAM BREACH",
+      productVersion: "1.0"
+    };
+    var script = document.createElement("script");
+    script.src = buildUrl + "/web.loader.js";
+    script.onload = function () {
+      createUnityInstance(document.querySelector("#unity-canvas"), config, function (p) { EchoUI.progress(p); })
+        .then(function (inst) { EchoUI.ready(inst); })
+        .catch(function (e) { EchoUI.fail(e); });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
